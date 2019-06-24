@@ -1,0 +1,160 @@
+/////// // The Buchberger algorithm in Singular, with LaTeX output.
+/////// // Programmed by Zoltan Kovacs <zoltan@geogebra.org>.
+///////
+/////// // Use some external libraries.
+/////// LIB "teachstd.lib";
+/////// LIB "latex.lib";
+///////
+/////// // Set up the problem.
+/////// // "lp" stands for "lexicographic order".
+/////// ring r = 0, (x,y), lp; // SET UP THE VARIABLES AND THE ORDERING.
+/////// poly p1 = x^2+y-5; // SET UP EQUATION 1.
+/////// poly p2 = x*y-2; // SET UP EQUATION 2.
+/////// list input = p1,p2; // SET UP THE PROBLEM.
+/////// // Formatting settings.
+/////// int hidechains = 0; // SET TO "1" TO HIDE REDUCTION CHAINS.
+/////// int TeXwidth = 8;   // MAXIMAL TERMS IN A POLY PRINTED.
+
+short = 0;
+int NoDollars = 1;
+
+// Technical subroutines:
+// appending a list by various objects.
+proc append(list A, poly a) {
+ list B = A;
+ B[size(B) + 1] = a;
+ return(B);
+ }
+proc appendl(list A, list a) {
+ list B = A;
+ B[size(B) + 1] = a;
+ return(B);
+ }
+proc appendi(list A, int a) {
+ list B = A;
+ B[size(B) + 1] = a;
+ return(B);
+ }
+
+// The "spol" operation.
+proc spol(poly f, poly g) {
+ poly l = lcm(leadmonom(f), leadmonom(g));
+ return(l * f / (leadcoef(f) * leadmonom(f)) -
+  l * g / (leadcoef(g) * leadmonom(g)));
+ // Note that first multiplication must be done, otherwise
+ // Singular will swallow the fractional part.
+ }
+
+// We follow the notations of
+// http://www.scholarpedia.org/article/Buchberger's_algorithm,
+// and also Greuel-Pfister: A Singular Introduction to
+// Commutative Algebra, page 50, Algorithm "NFBuchberger".
+// Gh is the subset of G whose each element can be applied
+// as a reductor for h.
+proc compute_Gh(list G, poly h) {
+ list Gh;
+ int i;
+ for (i = 1; i <= size(G); i++) {
+  if (leadmonom(h)/leadmonom(G[i]) != 0) {
+   Gh = appendi(Gh, i);
+   }
+  }
+ return(Gh);
+ }
+
+// Reduce f by using polynomials in G.
+// Note that many similar red() procs are possible,
+// here the "item" setting could be configured by the user.
+proc red(poly f, list G) {
+ poly h = f;
+ poly g, h1;
+ list Gh = compute_Gh(G, h);
+ int item;
+ int chosen;
+ int step = 0;
+ while (h != 0 && size(Gh) > 0) {
+  item = 1; // USER CONFIGURABLE
+  chosen = Gh[item];
+  g = G[chosen];
+  h = spol(h, g);
+  if (hidechains != 1) {
+   printf("\\\\ &\\underset{(%s)}{\\rightarrow}%s", chosen,
+    texpoly("", h));
+   }
+  step++;
+  Gh = compute_Gh(G, h);
+  }
+ if (hidechains == 1) {
+  printf("\\\\ &\\underset{%s\\times}{\\dashrightarrow}%s", 
+   step, texpoly("", h));
+  }
+ // Normalization.
+ if (h != 0) {
+  h1 = simplify(h, 1);
+  if (h1 != h) {
+   printf("\\sim \\\\ &\\qquad %s", texpoly("", h1));
+   h = h1;
+   }
+  }
+ print(".\\\\ \\end{align*}");
+ return(h);
+ }
+
+// Print the equation system.
+proc printG(list G) {
+ print("The equation system is:");
+ print("$$\\begin{align*}");
+ int i;
+ string delim = ",";
+ for (i = 1; i <= size(G); i++) {
+  if (i == size(G)) {
+   delim = ".";
+   }
+  printf("%s&= 0%s &&(%s)\\\\", texpoly("",G[i]), delim, i);
+  }
+ print("\\end{align*}$$");
+}
+
+// Buchberger algorithm on polynomials in B.
+proc buchberger(list B) {
+ list G = B;
+ printG(G);
+ list C, p;
+ int i, j, item;
+ poly f, g, h, s;
+ for (i = 1; i <= size(G); i++) {
+  for (j = i+1; j <= size(G); j++) {
+   p = i, j;
+   C = appendl(C, p);
+   }
+  }
+ while (size(C)>0) {
+  item = 1; // USER CONFIGURABLE
+  i = C[item][1];
+  j = C[item][2];
+  f = G[i];
+  g = G[j];
+  printf("Eliminating leading terms of (%s) and (%s):", i, j);
+  C = delete(C, item);
+  s = spol(f, g);
+  print("\\begin{align*}");
+  printf("%s&\\underset{(%s)}{\\rightarrow}%s", texpoly("", f), j,
+   texpoly("", s));
+  h = red(s, G);
+  if (h != 0) {
+   for (i=1; i <= size(G); i++) {
+    p = i, size(G) + 1;
+    C = appendl(C, p);
+    }
+   G = append(G, h);
+   print("Equation added:");
+   print("\\begin{align*}");
+   printf("%s&= 0. &&(%s)\\\\", texpoly("", h), size(G));
+   print("\\end{align*}");
+   }
+  }
+ return(G);
+ }
+
+// Main program.
+list output = buchberger(input);
