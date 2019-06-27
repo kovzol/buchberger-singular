@@ -11,6 +11,7 @@
 /////// poly p1 = x^2+y-5; // SET UP EQUATION 1.
 /////// poly p2 = x*y-2; // SET UP EQUATION 2.
 /////// list input = p1,p2; // SET UP THE PROBLEM.
+/////// int rcp = 0; // SET TO "1" TO REMOVE CRITICAL PAIRS WHOSE LEADING TERMS SHARE NO VARIABLES IN COMMON.
 /////// // Formatting settings.
 /////// int hidechains = 0; // SET TO "1" TO HIDE REDUCTION CHAINS.
 /////// int TeXwidth = 8;   // MAXIMAL TERMS IN A POLY PRINTED.
@@ -60,6 +61,20 @@ proc compute_Gh(list G, poly h) {
    }
   }
  return(Gh);
+ }
+
+proc are_disjoint(poly f, poly g) {
+ list fv = variables(f);
+ list gv = variables(g);
+ int fi, gi;
+ for (fi = 1; fi <= size(fv[1]); fi++) {
+  for (gi = 1; gi <= size(gv[1]); gi++) {
+   if (fv[1][fi] == gv[1][gi]) {
+    return(0);
+    }
+   }
+  }
+ return(1);
  }
 
 // Reduce f by using polynomials in G.
@@ -125,7 +140,9 @@ proc buchberger(list B) {
  for (i = 1; i <= size(G); i++) {
   for (j = i+1; j <= size(G); j++) {
    p = i, j;
-   C = appendl(C, p);
+   if (rcp == 0 || are_disjoint(leadmonom(G[i]),leadmonom(G[j])) == 0) {
+    C = appendl(C, p);
+    }
    }
   }
  while (size(C)>0) {
@@ -144,7 +161,9 @@ proc buchberger(list B) {
   if (h != 0) {
    for (i=1; i <= size(G); i++) {
     p = i, size(G) + 1;
-    C = appendl(C, p);
+    if (rcp == 0 || are_disjoint(leadmonom(h),leadmonom(G[i])) == 0) {
+     C = appendl(C, p);
+     }
     }
    G = append(G, h);
    print("Equation added:");

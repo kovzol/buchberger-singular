@@ -9,6 +9,7 @@
  $vars = $_GET["vars"];
  $polys = $_GET["polys"];
  $ord = $_GET["ord"];
+ $rcp = $_GET["rcp"];
  $hide = $_GET["hide"];
  $terms = $_GET["terms"];
 
@@ -25,10 +26,17 @@
      $inputcode .= 'p' . ($i+1);
      }
  $inputcode .= ';' . "\n";
-
  $code .= $inputcode;
+
  $code .= 'int hidechains = ';
  if ($hide == 'yes')
+     $code .= '1';
+ else
+     $code .= '0';
+ $code .= ';' . "\n";
+
+ $code .= 'int rcp = ';
+ if ($rcp == 'yes')
      $code .= '1';
  else
      $code .= '0';
