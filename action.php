@@ -42,8 +42,10 @@
      $code .= '0';
  $code .= ';' . "\n";
 
- $code .= 'int TeXwidth = ';
- $code .= $terms . ';' . "\n";
+ if ($terms != "") {
+     $code .= 'int TeXwidth = ';
+     $code .= $terms . ';' . "\n";
+     }
 
  $code .= file_get_contents("buchberger2-singular.txt");
 

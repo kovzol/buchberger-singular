@@ -3,17 +3,22 @@
 
 <b>Enter an algebraic equation system.</b><br><br>
 <form action="action.php">
-Polynomials:<br> <textarea name="polys">x^2+y-5
+Polynomials:<br> <textarea name="polys" rows="3">x^2+y-5
 x*y-2</textarea><br><br>
 
 Variables: <br> <input type="text" name="vars" value="x,y" size="5"><br><br>
 Ordering: <br> <input type="text" name="ord" value="lp" size="3"><br><br>
 Remove critical pairs whose leading terms share no variables in common:
 <input type="checkbox" name="rcp" value="yes"><br><br>
-Hide chains: <input type="checkbox" name="hide" value="yes"><br><br>
-Max. number of terms to show: <br><input type="text" name="terms" value="8" size="3"><br><br>
+Hide reduction chains: <input type="checkbox" name="hide" value="yes"><br><br>
+Max. number of terms to show (keep it empty to show all): <br><input type="text" name="terms" value="" size="3"><br><br>
 <input type="submit">
 </form>
+
+<hr>
+See help on the <a href="https://en.wikipedia.org/wiki/Buchberger%27s_algorithm">algorithm</a> and the possible
+settings for the
+<a href="https://www.singular.uni-kl.de/Manual/4-0-2/sing_31.htm">ordering</a>.
 
 </center>
 
