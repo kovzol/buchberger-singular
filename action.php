@@ -20,10 +20,13 @@
 
  $inputcode = 'list input = ';
  for ($i = 0; $i < count($polysA); $i++) {
-     $code .= 'poly p' . ($i+1) . ' = ' . rtrim($polysA[$i]) . ';' . "\n";
-     if ($i > 0)
-         $inputcode .= ', ';
-     $inputcode .= 'p' . ($i+1);
+     $poly = trim($polysA[$i]);
+     if ($poly != "") {
+         $code .= 'poly p' . ($i+1) . ' = ' . $poly . ';' . "\n";
+         if ($i > 0)
+             $inputcode .= ', ';
+         $inputcode .= 'p' . ($i+1);
+         }
      }
  $inputcode .= ';' . "\n";
  $code .= $inputcode;
@@ -58,10 +61,15 @@
 
  echo "<body><div>\n";
  for ($i=0; $i<count($output); $i++) {
-     echo $output[$i];
+     $line = $output[$i];
+     if (strpos($line, "?") != FALSE || strpos($line, "error") != FALSE) {
+         echo "<code>" . $line . "</code><br>";
+         }
+     else
+         echo $output[$i];
      }
  echo "</div></body>";
- 
+
 ?>
 
 </html>
