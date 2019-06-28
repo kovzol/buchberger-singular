@@ -10,3 +10,6 @@ This project is about to explain Buchberger's algorithm by using Singular as a b
 1. Point your web browser to the installation folder and start *index.html*.
 2. Fill in the forms and press the *Submit* button.
 3. Follow the results on the next page.
+
+## Demo
+![demo](demo.png "demo")
