@@ -151,7 +151,7 @@ proc buchberger(list B) {
   j = C[item][2];
   f = G[i];
   g = G[j];
-  printf("Cancelling leading term of (%s) by (%s) and continuing reduction:", i, j);
+  printf("Cancelling the leading term of (%s) by (%s) and continuing reduction:", i, j);
   C = delete(C, item);
   s = spol(f, g);
   print("\\begin{align*}");
